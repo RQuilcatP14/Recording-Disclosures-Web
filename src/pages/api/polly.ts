@@ -7,8 +7,19 @@ export const generateRecording = async (payload) => {
     body: JSON.stringify(payload)
   };
   try {
-    const response = await fetch(POLLY_URL, settings)
-    return response;
+    const response = await axios.post(
+      `${POLLY_URL}`,
+      JSON.stringify(payload),
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    return response.data;
+    // const response = await fetch(POLLY_URL, settings)
+    
+    // return response;
   } catch (error) {
     console.log(error);
   }
