@@ -9,7 +9,7 @@ export const getCarriers = async () => {
   }
 };
 
-export const insertCarrierPlan = async (payload) => {
+export const insertCarrierPlan = async (payload: any) => {
   try {
     const response = await axios.post(`/carrier/AddRecordingDisclosure`, payload);
     return response.data;
