@@ -139,7 +139,7 @@ const Home: NextPage = () => {
     setShowAudio(true);
   };
 
-  const generateAllRecordings = () => {
+  const generateAllRecordings = async () => {
     var list = [];
     let i = 0;
     carrierList.forEach((carrier) => {
@@ -148,20 +148,30 @@ const Home: NextPage = () => {
           id: i++,
           carrierName: carrier.carrierName,
           planName: plan.planName,
-          sectionOne: await generateRecordingBatch(
-            plan.sectionOne.replace("{{carrierName}}", carrier.carrierName)
-          ),
-          sectionTwo: await generateRecordingBatch(
-            plan.sectionTwo.replace("{{carrierName}}", carrier.carrierName)
-          ),
-          sectionThree: await generateRecordingBatch(
-            plan.sectionThree.replace("{{carrierName}}", carrier.carrierName)
-          ),
+          sectionOne: //await generateRecordingBatch(
+            plan.sectionOne.replaceAll("{{carrierName}}", carrier.carrierName),
+          //),
+          sectionTwo: //await generateRecordingBatch(
+            plan.sectionTwo.replaceAll("{{carrierName}}", carrier.carrierName),
+          //),
+          sectionThree: //await generateRecordingBatch(
+            plan.sectionThree.replaceAll("{{carrierName}}", carrier.carrierName)
+          //),
         });
       });
     });
-    setAllRecordingsList([...allRecordingsList, ...list])
-    //Array.prototype.push.apply(allRecordingsList, list)
+    let newList = [];
+    await Promise.all(list.map(async (element) => {
+      newList.push({
+        id: element.id,
+        carrierName: element.carrierName,
+        planName: element.planName,
+        sectionOne: await generateRecordingBatch(element.sectionOne),
+        sectionTwo: await generateRecordingBatch(element.sectionTwo),
+        sectionThree: await generateRecordingBatch(element.sectionThree)
+      })
+    }))
+    setAllRecordingsList(newList)
   };
 
   const generateRecordingBatch = async (text): Promise<string> => {
@@ -178,7 +188,6 @@ const Home: NextPage = () => {
       body: JSON.stringify(payload),
     });
     const content = await rawResponse.json();
-    //setShowBackdrop(false)
     return content.url;
   };
 
