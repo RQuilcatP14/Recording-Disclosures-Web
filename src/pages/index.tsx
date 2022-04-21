@@ -34,6 +34,7 @@ const Home: NextPage = () => {
   const [allRecordingsList, setAllRecordingsList] = useState([]);
   const [showTextArea, setShowTextArea] = useState(true);
   const [showBackdrop, setShowBackdrop] = useState(false)
+  const [voice, setVoice] = useState('Joey')
 
   const getCarrierList = async () => {
     const response = await getCarriers();
@@ -118,13 +119,17 @@ const Home: NextPage = () => {
   };
 
   const handleGenerate = () => {
+    setShowBackdrop(true)
     if (generateAll) {
       generateAllRecordings();
       setShowTextArea(false);
-      //setShowBackdrop(true)
     } else {
-      generateAudio();
-      setShowTextArea(true);
+      if (plan === 0){
+        alert('Select a plan, please')
+      } else {
+        generateAudio();
+        setShowTextArea(true);
+      }
     }
   };
 
@@ -132,11 +137,12 @@ const Home: NextPage = () => {
     setShowAudio(false);
     const payload = {
       text: disclosure,
-      voice: "Joey",
+      voice: voice,
     };
     const response = await generateRecording(payload);
     setAudioUrl(response.url);
     setShowAudio(true);
+    setShowBackdrop(false)
   };
 
   const generateAllRecordings = async () => {
@@ -172,6 +178,7 @@ const Home: NextPage = () => {
       })
     }))
     setAllRecordingsList(newList)
+    setShowBackdrop(false)
   };
 
   const generateRecordingBatch = async (text): Promise<string> => {
@@ -204,7 +211,7 @@ const Home: NextPage = () => {
         </div>
         {/* <form> */}
         <div className="flex flex-wrap -mx-3 mb-6">
-          <div className="w-full md:w-1/4 px-3 mb-6 md:mb-0">
+          <div className="w-full md:w-1/5 px-3 mb-6 md:mb-0">
             <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
               Carrier
             </label>
@@ -235,7 +242,7 @@ const Home: NextPage = () => {
               </div>
             </div>
           </div>
-          <div className="w-full md:w-1/4 px-3">
+          <div className="w-full md:w-1/5 px-3">
             <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
               Plan
             </label>
@@ -266,7 +273,7 @@ const Home: NextPage = () => {
               </div>
             </div>
           </div>
-          <div className="w-full md:w-1/4 px-3">
+          <div className="w-full md:w-1/5 px-3">
             <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
               Sample / Template
             </label>
@@ -301,7 +308,42 @@ const Home: NextPage = () => {
               </div>
             </div>
           </div>
-          <div className="w-full md:w-1/4 px-3 pt-8">
+          <div className="w-full md:w-1/5 px-3">
+            <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+              Voice
+            </label>
+            <div className="relative">
+              <select
+                className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                id="grid-state"
+                value={voice}
+                onChange={(e) => setVoice(e.target.value)}
+              >
+                <option key={1} value="Joey">
+                  Joey (Male)
+                </option>
+                <option key={2} value="Kendra">
+                  Kendra (Female)
+                </option>
+                <option key={3} value="Matthew">
+                  Matthew (Male)
+                </option>
+                <option key={4} value="Joanna">
+                  Joanna (Female)
+                </option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                <svg
+                  className="fill-current h-4 w-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div className="w-full md:w-1/5 px-3 pt-8">
             <label className="text-gray-500 font-bold">
               <input
                 className="mr-2 leading-tight"
@@ -489,7 +531,7 @@ const Home: NextPage = () => {
           </div>
         )}
       </div>
-      <Backdrop style={{ position: "absolute", zIndex: 1 }} open={showBackdrop}>
+      <Backdrop open={showBackdrop}>
         <CircularProgress color="inherit" />
       </Backdrop>
     </>
